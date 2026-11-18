@@ -1,0 +1,15 @@
+# 許可したファイルだけをビルドコンテキストへ送ります。
+*
+!index.html
+!css/
+!images/
+!js/
+!src/
+!scripts/
+!tests/
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.node.json
+!vitest.config.ts
+!playwright.config.ts

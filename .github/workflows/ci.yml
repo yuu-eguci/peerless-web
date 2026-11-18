@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 型チェック・単体テスト・配信用ファイルの確認
+        run: docker compose run --rm --build check
+
+      - name: サイトの起動
+        run: docker compose up --build --detach --wait web
+
+      - name: HTTP 応答の確認
+        run: curl --fail --silent --show-error --output /dev/null http://127.0.0.1:8080/
+
+      - name: E2E テスト
+        run: docker compose run --rm --build e2e
+
+      - name: 停止
+        if: always()
+        run: docker compose down

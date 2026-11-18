@@ -1,0 +1,38 @@
+{
+  "name": "peerless-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --format=iife --target=es2020 --outfile=dist/main.js && node scripts/vendor.ts dist",
+    "check": "npm run typecheck && npm test && npm run build && node scripts/verify-dist.ts dist js",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "dependencies": {
+    "bootstrap": "4.6.2",
+    "jquery": "3.8.0",
+    "jquery-migrate": "3.6.0",
+    "popper.js": "1.16.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/jquery": "^3.5.34",
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^26.13.1",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": "^11.20.0",
+      "onFail": "error"
+    }
+  }
+}
