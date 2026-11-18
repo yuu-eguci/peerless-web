@@ -1,245 +1,164 @@
-// AOS.init({
-//   duration: 800,
-//   easing: 'slide'
-// });
+"use strict";
+(() => {
+  // src/navbar.ts
+  var SCROLLED_OFFSET = 750;
+  var AWAKE_OFFSET = 800;
+  var nextNavbarState = (scrollTop, state) => {
+    const next = { ...state };
+    if (scrollTop > SCROLLED_OFFSET) {
+      next.scrolled = true;
+    }
+    if (scrollTop < SCROLLED_OFFSET && next.scrolled) {
+      next.scrolled = false;
+      next.sleep = false;
+    }
+    if (scrollTop > AWAKE_OFFSET) {
+      next.awake = true;
+    }
+    if (scrollTop < AWAKE_OFFSET && next.awake) {
+      next.awake = false;
+      next.sleep = true;
+    }
+    return next;
+  };
 
-(function ($) {
+  // src/reveal.ts
+  var revealEffect = (effect) => effect === "fadeIn" || effect === "fadeInLeft" || effect === "fadeInRight" ? effect : "fadeInUp";
 
-  "use strict";
-
-  $(window).stellar({
+  // src/main.ts
+  var $ = jQuery;
+  var $window = $(window);
+  $window.stellar({
     responsive: false,
     parallaxBackgrounds: true,
     parallaxElements: true,
     horizontalScrolling: false,
     hideDistantElements: true,
-    scrollProperty: 'scroll',
+    scrollProperty: "scroll",
     horizontalOffset: 0,
-    verticalOffset: 0,
+    verticalOffset: 0
   });
-
-  const fullHeight = function () {
-    $('.js-fullheight').css('height', $(window).height());
-    $(window).resize(function () {
-      $('.js-fullheight').css('height', $(window).height());
-    });
+  var fitFullHeight = () => {
+    $(".js-fullheight").css("height", $window.height() ?? 0);
   };
-  fullHeight();
-
-  // loader
-  const loader = function () {
-    setTimeout(function () {
-      if ($('#prls-loader').length > 0) {
-        $('#prls-loader').removeClass('show');
-      }
-    }, 1);
-  };
-  loader();
-
-  // Scrollax
+  fitFullHeight();
+  $window.on("resize", fitFullHeight);
+  setTimeout(() => {
+    $("#prls-loader").removeClass("show");
+  }, 1);
   $.Scrollax();
-
-  const carousel = function () {
-    $('.carousel-work').owlCarousel({
-      autoplay: true,
-      center: true,
-      loop: true,
-      items: 1,
-      margin: 30,
-      stagePadding: 0,
-      nav: true,
-      navText: ['<span class="ion-ios-arrow-back">', '<span class="ion-ios-arrow-forward">'],
-      responsive: {
-        0: {
-          items: 1,
-          stagePadding: 0
-        },
-        600: {
-          items: 2,
-          stagePadding: 50
-        },
-        1000: {
-          items: 3,
-          stagePadding: 100
-        }
-      }
-    });
-  };
-  carousel();
-
-  $('nav .dropdown').hover(function () {
-    const $this = $(this);
-    $this.addClass('show');
-    $this.find('> a').attr('aria-expanded', true);
-    $this.find('.dropdown-menu').addClass('show');
-  }, function () {
-    const $this = $(this);
-    $this.removeClass('show');
-    $this.find('> a').attr('aria-expanded', false);
-    $this.find('.dropdown-menu').removeClass('show');
-  });
-
-  $('#dropdown04').on('show.bs.dropdown', function () {
-    console.log('show');
-  });
-
-  // scroll
-  const scrollWindow = function () {
-    $(window).scroll(function () {
-      const $w = $(this),
-          st = $w.scrollTop(),
-          navbar = $('.ftco_navbar'),
-          sd = $('.js-scroll-wrap');
-
-      if (st > 750) {
-        if (!navbar.hasClass('scrolled')) {
-          navbar.addClass('scrolled');
-        }
-      }
-      if (st < 750) {
-        if (navbar.hasClass('scrolled')) {
-          navbar.removeClass('scrolled sleep');
-        }
-      }
-      if (st > 800) {
-        if (!navbar.hasClass('awake')) {
-          navbar.addClass('awake');
-        }
-
-        if (sd.length > 0) {
-          sd.addClass('sleep');
-        }
-      }
-      if (st < 800) {
-        if (navbar.hasClass('awake')) {
-          navbar.removeClass('awake');
-          navbar.addClass('sleep');
-        }
-        if (sd.length > 0) {
-          sd.removeClass('sleep');
-        }
-      }
-    });
-  };
-  scrollWindow();
-
-  const isMobile = {
-    Android: function () {
-      return navigator.userAgent.match(/Android/i);
-    },
-    BlackBerry: function () {
-      return navigator.userAgent.match(/BlackBerry/i);
-    },
-    iOS: function () {
-      return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-    },
-    Opera: function () {
-      return navigator.userAgent.match(/Opera Mini/i);
-    },
-    Windows: function () {
-      return navigator.userAgent.match(/IEMobile/i);
-    },
-    any: function () {
-      return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+  $(".carousel-work").owlCarousel({
+    autoplay: true,
+    center: true,
+    loop: true,
+    items: 1,
+    margin: 30,
+    stagePadding: 0,
+    nav: true,
+    navText: ['<span class="ion-ios-arrow-back">', '<span class="ion-ios-arrow-forward">'],
+    responsive: {
+      0: { items: 1, stagePadding: 0 },
+      600: { items: 2, stagePadding: 50 },
+      1e3: { items: 3, stagePadding: 100 }
     }
-  };
-
-  const counter = function () {
-    $('#section-counter').waypoint(function (direction) {
-      if (direction === 'down' && !$(this.element).hasClass('prls-animated')) {
-        const comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',');
-        $('.number').each(function () {
-          const $this = $(this),
-              num = $this.data('number');
-          console.log(num);
-          $this.animateNumber({
-            number: num,
-            numberStep: comma_separator_number_step
-          }, 7000);
+  });
+  $("nav .dropdown").on("mouseenter", function() {
+    const $this = $(this);
+    $this.addClass("show");
+    $this.find("> a").attr("aria-expanded", "true");
+    $this.find(".dropdown-menu").addClass("show");
+  });
+  $("nav .dropdown").on("mouseleave", function() {
+    const $this = $(this);
+    $this.removeClass("show");
+    $this.find("> a").attr("aria-expanded", "false");
+    $this.find(".dropdown-menu").removeClass("show");
+  });
+  $window.on("scroll", () => {
+    const scrollTop = $window.scrollTop() ?? 0;
+    const navbar = $(".ftco_navbar");
+    const next = nextNavbarState(scrollTop, {
+      scrolled: navbar.hasClass("scrolled"),
+      awake: navbar.hasClass("awake"),
+      sleep: navbar.hasClass("sleep")
+    });
+    navbar.toggleClass("scrolled", next.scrolled).toggleClass("awake", next.awake).toggleClass("sleep", next.sleep);
+    if (scrollTop > 800) {
+      $(".js-scroll-wrap").addClass("sleep");
+    } else if (scrollTop < 800) {
+      $(".js-scroll-wrap").removeClass("sleep");
+    }
+  });
+  $("#section-counter").waypoint(
+    function(direction) {
+      if (direction === "down" && !$(this.element).hasClass("prls-animated")) {
+        const numberStep = $.animateNumber.numberStepFactories.separator(",");
+        $(".number").each(function() {
+          const $this = $(this);
+          $this.animateNumber({ number: Number($this.data("number")), numberStep }, 7e3);
         });
       }
-    }, { offset: '95%' });
-  };
-  counter();
-
-  const contentWayPoint = function () {
-    let i = 0;
-    $('.prls-animate').waypoint(function (direction) {
-      if (direction === 'down' && !$(this.element).hasClass('prls-animated')) {
-        i++;
-        $(this.element).addClass('item-animate');
-        setTimeout(function () {
-          $('body .prls-animate.item-animate').each(function (k) {
+    },
+    { offset: "95%" }
+  );
+  $(".prls-animate").waypoint(
+    function(direction) {
+      if (direction === "down" && !$(this.element).hasClass("prls-animated")) {
+        $(this.element).addClass("item-animate");
+        setTimeout(() => {
+          $("body .prls-animate.item-animate").each(function(index) {
             const el = $(this);
-            setTimeout(function () {
-              const effect = el.data('animate-effect');
-              if (effect === 'fadeIn') {
-                el.addClass('fadeIn prls-animated');
-              } else if (effect === 'fadeInLeft') {
-                el.addClass('fadeInLeft prls-animated');
-              } else if (effect === 'fadeInRight') {
-                el.addClass('fadeInRight prls-animated');
-              } else {
-                el.addClass('fadeInUp prls-animated');
-              }
-              el.removeClass('item-animate');
-            }, k * 50, 'easeInOutExpo');
+            setTimeout(() => {
+              el.addClass(`${revealEffect(el.data("animate-effect"))} prls-animated`);
+              el.removeClass("item-animate");
+            }, index * 50);
           });
         }, 100);
       }
-    }, { offset: '95%' });
-  };
-  contentWayPoint();
-
-  // navigation
-  const OnePageNav = function () {
-    $(".smoothscroll[href^='#'], #prls-nav ul li a[href^='#']").on('click', function (e) {
-      e.preventDefault();
-      const hash = this.hash,
-          navToggler = $('.navbar-toggler');
-      $('html, body').animate({
-        scrollTop: $(hash).offset().top
-      }, 700, 'easeInOutExpo', function () {
-        window.location.hash = hash;
-      });
-      if (navToggler.is(':visible')) {
-        navToggler.click();
-      }
+    },
+    { offset: "95%" }
+  );
+  $(".smoothscroll[href^='#'], #prls-nav ul li a[href^='#']").on("click", function(event) {
+    event.preventDefault();
+    const hash = this.hash;
+    const offset = $(hash).offset();
+    if (offset === void 0) {
+      return;
+    }
+    $("html, body").animate({ scrollTop: offset.top }, 700, "easeInOutExpo", () => {
+      window.location.hash = hash;
     });
-    $('body').on('activate.bs.scrollspy', function () {
-      console.log('nice');
-    });
-  };
-  OnePageNav();
-
-  // magnific popup
-  $('.image-popup').magnificPopup({
-    type: 'image',
+    const navToggler = $(".navbar-toggler");
+    if (navToggler.is(":visible")) {
+      navToggler.trigger("click");
+    }
+  });
+  $(".image-popup").magnificPopup({
+    type: "image",
     closeOnContentClick: true,
     closeBtnInside: false,
     fixedContentPos: true,
-    mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
+    mainClass: "mfp-no-margins mfp-with-zoom",
     gallery: {
       enabled: true,
       navigateByImgClick: true,
-      preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+      preload: [0, 1]
     },
     image: {
       verticalFit: true
     },
     zoom: {
       enabled: true,
-      duration: 300 // don't foget to change the duration also in CSS
+      duration: 300
+      // CSS の duration も合わせて変更します。
     }
   });
-
-  $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+  $(".popup-youtube, .popup-vimeo, .popup-gmaps").magnificPopup({
     disableOn: 700,
-    type: 'iframe',
-    mainClass: 'mfp-fade',
+    type: "iframe",
+    mainClass: "mfp-fade",
     removalDelay: 160,
     preloader: false,
     fixedContentPos: false
   });
-
-})(jQuery);
+})();

@@ -1,0 +1,29 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "127.0.0.1:8080:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  check:
+    profiles: [tools]
+    build:
+      context: .
+      target: check
+
+  e2e:
+    profiles: [tools]
+    build:
+      context: .
+      target: e2e
+    environment:
+      BASE_URL: http://web
+    depends_on:
+      web:
+        condition: service_healthy
